@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nexus-app
+  labels:
+    app: my-nexus-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-nexus-app
+  template:
+    metadata:
+      labels:
+        app: my-nexus-app
+    spec:
+      imagePullSecrets:
+      - name: nexus-registry-key  # Secret used to authenticate with Nexus private registry
+      containers:
+      - name: my-nexus-app
+        image: nexus.example.com/my-project/my-app:1.0  # Full Nexus image URL
+        imagePullPolicy: Always  # Always pull the latest version
+        ports:
+          - containerPort: 8080  # Expose app port
