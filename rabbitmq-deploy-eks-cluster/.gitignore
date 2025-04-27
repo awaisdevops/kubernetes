@@ -1,0 +1,13 @@
+# Ignore Helm chart package files and log files
+*.tgz
+*.log
+
+# Ignore Kubernetes manifest files
+*.yaml
+
+# Ignore macOS system file
+.DS_Store
+
+# Ignore all files inside the images directory
+images/
+
