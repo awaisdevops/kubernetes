@@ -1,0 +1,10 @@
+apiVersion: v1  # #apiVersion
+kind: ConfigMap  # #ConfigMap
+metadata:  # #metadata
+  name: mosquitto-config-file  # #name
+data:  # #data
+  mosquitto.conf: |  # #configFileName
+    log_dest stdout  # #configEntry
+    log_type all  # #configEntry
+    log_timestamp true  # #configEntry
+    listener 9001  # #configEntry
