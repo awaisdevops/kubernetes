@@ -215,7 +215,7 @@ amqp://user:password@rabbitmq.rabbitmq.svc.cluster.local:5672/
 
 ---
 
-# 🎯 Full Quick Commands Summary:
+# Full Quick Commands Summary:
 
 ```bash
 # Add the Bitnami Helm chart repository
