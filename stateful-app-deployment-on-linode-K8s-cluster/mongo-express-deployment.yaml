@@ -1,0 +1,31 @@
+apiVersion: apps/v1  # Defines the API version of the deployment
+kind: Deployment  # Specifies the resource type (Deployment)
+metadata:
+  name: mongo-express  # Name of the deployment
+  labels:
+    app: mongo-express  # Label to identify the deployment
+spec:
+  replicas: 1  # Number of pod replicas
+  selector:
+    matchLabels:
+      app: mongo-express  # Label selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: mongo-express  # Labels for the pods created by this deployment
+    spec:
+      containers:
+      - name: mongo-express  # Container name
+        image: mongo-express  # Docker image to use for the container
+        ports: 
+        - containerPort: 8081  # Port exposed by the container
+        env:
+        - name: ME_CONFIG_MONGODB_ADMINUSERNAME  # MongoDB admin username environment variable
+          value: root  # Value for admin username
+        - name: ME_CONFIG_MONGODB_SERVER  # MongoDB server address for Mongo Express to connect to
+          value: mongodb-0.mongodb-headless  # MongoDB service address
+        - name: ME_CONFIG_MONGODB_ADMINPASSWORD  # MongoDB admin password environment variable
+          valueFrom: 
+            secretKeyRef:  # Fetch password from Kubernetes secret
+              name: mongodb  # Name of the secret
+              key: mongodb-root-password  # Key in the secret containing the password

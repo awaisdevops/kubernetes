@@ -1,0 +1,26 @@
+# API version for the Ingress resource
+apiVersion: extensions/v1beta1
+
+# Declares this resource as an Ingress
+kind: Ingress
+
+metadata:
+  # Annotations to specify which Ingress controller to use (nginx in this case)
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  # Name of the Ingress resource
+  name: mongo-express
+
+spec:
+  rules:
+    # Hostname for the ingress rule (external access point)
+    - host: nb-139-162-140-213.frankfurt.nodebalancer.linode.com #Load Balancer Host Name
+      http:
+        paths:
+          # Path to match incoming requests
+          - path: /
+            backend:
+              # Name of the service to route traffic to
+              serviceName: mongo-express-service
+              # Port on which the service is running
+              servicePort: 8081
