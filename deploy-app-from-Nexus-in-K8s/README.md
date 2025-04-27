@@ -23,7 +23,7 @@ kubectl create secret docker-registry nexus-registry-key \
   --docker-email=<your-email>
 ```
 
-💡 Replace `nexus.example.com` with the actual Docker registry hostname (not including `https://` or `/repository/`).
+Replace `nexus.example.com` with the actual Docker registry hostname (not including `https://` or `/repository/`).
 
 ---
 
