@@ -1,0 +1,39 @@
+# Authentication settings
+auth:
+  username: myuser
+  password: mysecurepassword
+  erlangCookie: mysupersecreterlangcookie
+
+# Number of replicas (instances)
+replicaCount: 2
+
+# Persistent storage configuration
+persistence:
+  enabled: true
+  storageClass: "gp2"
+  accessModes:
+    - ReadWriteOnce
+  size: 8Gi
+
+# Resource requests and limits
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 250m
+  limits:
+    memory: 1024Mi
+    cpu: 500m
+
+# Service configuration
+service:
+  type: LoadBalancer
+
+# RBAC (Role-Based Access Control) settings
+rbac:
+  create: true
+
+# Metrics and monitoring configuration
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
