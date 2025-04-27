@@ -1,114 +1,135 @@
-# Deploy and Configure RabbitMQ in AWS EKS
+# Deploy and Configure RabbitMQ in AWS EKS Cluster
 
-This project contains a stpe by stpe guide to deploy and configure **RabbitMQ** as a **message broker inside an AWS EKS cluster**, including options for secure setups. 
-
----
+This project exolains how to deploy and configure **RabbitMQ** as a **message broker inside an AWS EKS cluster**, including options for secure setups. 
 
 ---
 
-## 1. Add RabbitMQ Helm Repository
+# 1. Add RabbitMQ Helm Repository
 
-Add Bitnami's Helm repository:
+First, add Bitnami's Helm repository (they maintain official RabbitMQ charts):
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
+# Add the Bitnami Helm chart repository
+
 helm repo update
-2. Create a Namespace for RabbitMQ
-Create a separate namespace:
+# Update the local Helm chart repository list
 
-bash
-Copy
-Edit
+```
+
+---
+
+# 2. Create a Namespace for RabbitMQ
+
+Organize RabbitMQ into its own namespace:
+
+```bash
 kubectl create namespace rabbitmq
-(Optional) Check namespaces:
+# Create a new Kubernetes namespace for RabbitMQ
 
-bash
-Copy
-Edit
 kubectl get namespaces
-3. Deploy RabbitMQ Using Helm
+# Get the list of all namespaces in the Kubernetes cluster
+
+```
+
+---
+
+# 3. Deploy RabbitMQ Using Helm
+
 Install RabbitMQ into your EKS cluster:
 
-bash
-Copy
-Edit
+```bash
 helm install rabbitmq bitnami/rabbitmq --namespace rabbitmq
-This installs:
+#Install RabbitMQ into your EKS cluster
+```
 
-RabbitMQ server
+✅ This installs:
 
-RabbitMQ management UI
+- RabbitMQ server
+- RabbitMQ management UI
+- Necessary Kubernetes services
+- PVCs (Persistent Volume Claims) for data persistence
 
-Necessary Kubernetes services
+---
 
-PVCs (Persistent Volume Claims) for data persistence
+# 4. Verify Deployment
 
-4. Verify Deployment
-Check all resources in the rabbitmq namespace:
+Check all resources in the `rabbitmq` namespace:
 
-bash
-Copy
-Edit
+```bash
 kubectl get all -n rabbitmq
+# Get all resources (pods, services, deployments, etc.) in the 'rabbitmq' namespace
+```
+
 You should see:
 
-Pods
+- Pods
+- Services
+- StatefulSet
+- ConfigMaps
+- Secrets
 
-Services
+---
 
-StatefulSet
+# 5. Access RabbitMQ Credentials
 
-ConfigMaps
+RabbitMQ credentials (username/password) are stored in Kubernetes Secrets.
 
-Secrets
+Retrieve them:
 
-5. Access RabbitMQ Credentials
-Retrieve the auto-generated credentials:
-
-bash
-Copy
-Edit
-# Get the default username
+```bash
 kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-username}" | base64 -d
 echo
+# Get the default username
 
-# Get the default password
 kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d
 echo
-By default:
+# Get the default password
+```
 
-Username: user
+By default, it’s usually:
 
-Password: (generated random password)
+- **Username:** `user`
+- **Password:** (generated random password)
 
-6. Access RabbitMQ Management UI (Port Forward)
-Access the RabbitMQ dashboard on port 15672:
+---
 
-bash
-Copy
-Edit
+# 6. Access RabbitMQ Management UI (Port Forward)
+
+RabbitMQ dashboard runs on port **15672**.
+
+To access it locally:
+
+```bash
 kubectl port-forward --namespace rabbitmq svc/rabbitmq 15672:15672
-Open:
+# Forward port 15672 from the RabbitMQ service to your local machine for accessing the RabbitMQ management interface
+```
 
-cpp
-Copy
-Edit
+Open your browser:
+
+```
 http://127.0.0.1:15672
-Use the retrieved credentials to log in.
+```
 
-7. Create a Custom values.yaml (optional but recommended)
-For custom settings, create a values.yaml:
+Use the credentials retrieved earlier to log in.
 
-yaml
-Copy
-Edit
+---
+
+# 7. Create a Custom `values.yaml` (optional but recommended)
+
+If you want **custom settings** like setting **static credentials**, **node selectors**, **persistence**, **replicas**, and **resources**, you can create a `values.yaml` like:
+
+```yaml
+# Authentication settings
 auth:
   username: myuser
   password: mysecurepassword
   erlangCookie: mysupersecreterlangcookie
 
+# Number of replicas (instances)
 replicaCount: 2
 
+# Persistent storage configuration
 persistence:
   enabled: true
   storageClass: "gp2"
@@ -116,6 +137,7 @@ persistence:
     - ReadWriteOnce
   size: 8Gi
 
+# Resource requests and limits
 resources:
   requests:
     memory: 512Mi
@@ -124,102 +146,110 @@ resources:
     memory: 1024Mi
     cpu: 500m
 
+# Service configuration
 service:
   type: LoadBalancer
 
+# RBAC (Role-Based Access Control) settings
 rbac:
   create: true
 
+# Metrics and monitoring configuration
 metrics:
   enabled: true
   serviceMonitor:
     enabled: true
-Save it as rabbitmq-values.yaml.
+```
 
-Deploy with:
+> Save this file as `rabbitmq-values.yaml`.
 
-bash
-Copy
-Edit
+Then deploy RabbitMQ with your custom config:
+
+```bash
 helm install rabbitmq bitnami/rabbitmq -n rabbitmq -f rabbitmq-values.yaml
-8. Exposing RabbitMQ to External Traffic (Optional)
-If you used service.type: LoadBalancer, a public AWS ELB will be created.
+# Install RabbitMQ using Helm with a custom values file in the 'rabbitmq' namespace
+```
+
+---
+
+# 8. Exposing RabbitMQ to External Traffic (Optional)
+
+If you used `service.type: LoadBalancer` in `values.yaml`, a public AWS ELB will be created.
 
 Check the external IP:
 
-bash
-Copy
-Edit
+```bash
 kubectl get svc -n rabbitmq
-Look for an EXTERNAL-IP field.
+# Get the list of services in the 'rabbitmq' namespace
+```
 
-9. RabbitMQ Connection URL Example
-Connect to RabbitMQ:
-
-php-template
-Copy
-Edit
-amqp://<rabbitmq-username>:<rabbitmq-password>@<rabbitmq-service-host>:5672/
-Example:
-
-pgsql
-Copy
-Edit
-amqp://user:password@rabbitmq.rabbitmq.svc.cluster.local:5672/
-10. Optional - Production-Level Enhancements
-Enable TLS: Bitnami Helm charts allow easy TLS configuration.
-
-Cluster Operator: For multi-AZ high availability.
-
-Persistence: Always enable persistence for production.
-
-Metrics: Integrate with Prometheus/Grafana for monitoring.
-
-11. Upgrade / Uninstall RabbitMQ
-To upgrade:
-
-bash
-Copy
-Edit
-helm upgrade rabbitmq bitnami/rabbitmq -n rabbitmq -f rabbitmq-values.yaml
-To uninstall:
-
-bash
-Copy
-Edit
-helm uninstall rabbitmq -n rabbitmq
-Clean up namespace:
-
-bash
-Copy
-Edit
-kubectl delete namespace rabbitmq
-🎯 Full Quick Commands Summary
-bash
-Copy
-Edit
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-
-kubectl create namespace rabbitmq
-
-helm install rabbitmq bitnami/rabbitmq --namespace rabbitmq
-
-kubectl get all -n rabbitmq
-
-kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-username}" | base64 -d
-kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d
-
-kubectl port-forward --namespace rabbitmq svc/rabbitmq 15672:15672
-
-# (Optional custom config)
-helm install rabbitmq bitnami/rabbitmq -n rabbitmq -f rabbitmq-values.yaml
-
-License
-This project is licensed under the MIT License.
-
-sql
-Copy
-Edit
+Look for an **EXTERNAL-IP** assigned to the RabbitMQ service.
 
 ---
+
+# 9. RabbitMQ Connection URL
+
+Once deployed, your apps can connect like this:
+
+```
+amqp://<rabbitmq-username>:<rabbitmq-password>@<rabbitmq-service-host>:5672/
+```
+
+- `5672` → default AMQP port
+- `15672` → RabbitMQ UI port (for management only)
+
+Example:
+
+```
+amqp://user:password@rabbitmq.rabbitmq.svc.cluster.local:5672/
+```
+
+---
+
+# 10. Optional - Production-Level Enhancements
+
+- **Enable TLS**: Bitnami Helm charts allow enabling TLS easily with a certificate manager.
+- **Cluster Operator**: If you want more advanced clustering (multi-AZ RabbitMQ clusters), consider Bitnami’s **RabbitMQ Cluster Operator**.
+- **Persistence**: Always keep persistence enabled for production to avoid data loss.
+- **Metrics**: Enable metrics for Prometheus/Grafana monitoring.
+
+---
+
+# 🎯 Full Quick Commands Summary:
+
+```bash
+# Add the Bitnami Helm chart repository
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# Update the Helm repositories
+helm repo update
+
+# Create the RabbitMQ namespace in Kubernetes
+kubectl create namespace rabbitmq
+
+# Install RabbitMQ using Helm in the 'rabbitmq' namespace
+helm install rabbitmq bitnami/rabbitmq --namespace rabbitmq
+
+# Get all resources (pods, services, deployments, etc.) in the 'rabbitmq' namespace
+kubectl get all -n rabbitmq
+
+# Get the RabbitMQ username from the Kubernetes secret and decode it from base64
+kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-username}" | base64 -d
+
+# Get the RabbitMQ password from the Kubernetes secret and decode it from base64
+kubectl get secret --namespace rabbitmq rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 -d
+
+# Forward port 15672 from the RabbitMQ service to your local machine for accessing the RabbitMQ management interface
+kubectl port-forward --namespace rabbitmq svc/rabbitmq 15672:15672
+
+# (Optional) Install RabbitMQ using Helm with a custom values file in the 'rabbitmq' namespace
+helm install rabbitmq bitnami/rabbitmq -n rabbitmq -f rabbitmq-values.yaml
+
+```
+
+---
+
+# License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+```
