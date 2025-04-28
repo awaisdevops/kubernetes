@@ -418,9 +418,6 @@ For example, when an application like Jenkins sends a request to the API server 
 - **Authorization**: After successful authentication, Kubernetes checks what actions the authenticated user is allowed to perform. Using RBAC (Role-Based Access Control), Kubernetes examines the Roles or ClusterRoles assigned to the user to determine if they have permission for the requested operation.
 
 In short, Kubernetes first verifies who you are, then checks what you are allowed to do.
-
----
-
 ## License
 ---
 
