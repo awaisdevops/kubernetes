@@ -131,6 +131,7 @@ To apply the configuration:
 ```bash
 kubectl apply -f emailservice.yaml
 ```
+---
 
 ```bash
 vim recommendationservice.yaml
@@ -202,8 +203,6 @@ To apply the configuration:
 ```bash
 kubectl apply -f recommendationservice.yaml
 ```
-
----
 
 ---
 
