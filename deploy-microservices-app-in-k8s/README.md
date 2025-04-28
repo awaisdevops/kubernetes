@@ -63,10 +63,10 @@ A connection graph helps visualize how services interact.
 
 ## Deployment and Service Configurations
 
-We created 11 YAML files—1 for each deployment and its corresponding service.
+We created 11 YAML files. 1 for each deployment and its corresponding service.
 
 ```bash
-kubectl apply -f emailservice.yaml
+vim emailservice.yaml
 ```
 
 ```yaml
@@ -131,6 +131,79 @@ To apply the configuration:
 ```bash
 kubectl apply -f emailservice.yaml
 ```
+
+```bash
+vim recommendationservice.yaml
+```
+
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+spec:
+  selector:
+    matchLabels:
+      app: recommendationservice
+  template:
+    metadata:
+      labels:
+        app: recommendationservice
+    spec:
+      containers:
+      - name: server
+        image: gcr.io/google-samples/microservices-demo/recommendationservice:v0.2.3
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          periodSeconds: 5
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8080"]
+        livenessProbe:
+          periodSeconds: 5
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:8080"]
+        env:
+        - name: PORT
+          value: "8080"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          value: "productcatalogservice:3550"
+        - name: DISABLE_TRACING
+          value: "1"
+        - name: DISABLE_PROFILER
+          value: "1"
+        - name: DISABLE_DEBUGGER
+          value: "1"  
+        resources:
+          requests:
+            cpu: 100m
+            memory: 220Mi
+          limits:
+            cpu: 200m
+            memory: 450Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendationservice
+spec:
+  type: ClusterIP
+  selector:
+    app: recommendationservice
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+```
+
+To apply the configuration:
+
+```bash
+kubectl apply -f recommendationservice.yaml
+```
+
+---
 
 ---
 
