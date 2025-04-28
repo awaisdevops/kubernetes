@@ -407,7 +407,7 @@ Output: `no` means the service account does not have the `delete` permission.
 ```
 ---
 
-## Summary
+# Summary
 
 In Kubernetes security, there are two main levels: authentication and authorization.
 
@@ -420,6 +420,7 @@ For example, when an application like Jenkins sends a request to the API server 
 In short, Kubernetes first verifies who you are, then checks what you are allowed to do.
 
 ---
+
 
 ## License
 ---
