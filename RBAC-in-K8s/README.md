@@ -407,7 +407,9 @@ Output: `no` means the service account does not have the `delete` permission.
 ```
 ---
 
-# Summary
+
+## Summary
+---
 
 In Kubernetes security, there are two main levels: authentication and authorization.
 
