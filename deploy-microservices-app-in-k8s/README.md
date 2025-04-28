@@ -855,6 +855,8 @@ kubectl apply -f redis-cart.yaml
 
 - Make sure to maintain consistent naming across deployment and service manifests.
 
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
