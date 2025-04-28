@@ -236,7 +236,7 @@ Kubernetes delegates the management of users and groups to the administrator —
 
 ## Service Accounts in Kubernetes
 
-After setting permissions for human users (admins and developers), we must also manage application access within the cluster. Applications—whether running inside or outside the cluster—often need permissions to interact with Kubernetes resources.
+A **Service Account** is used by applications that need to connect to the Kubernetes cluster for tasks like resource creation or data retrieval. For example, Prometheus requires a Service Account to collect cluster metrics for monitoring.
 
 Examples:
 
@@ -244,12 +244,167 @@ Examples:
 - Microservices may need access only within their own namespace.
 - External tools (e.g., Jenkins, Terraform) might deploy or configure resources inside the cluster.
 
-Following the principle of least privilege, applications should only have the permissions they need—nothing more.
+When a request is made to the Kubernetes cluster, it first reaches the **KubeAPI Server**. The API server **authenticates** the request and then **authorizes** it to determine whether the requested action is allowed within the cluster.
 
-Kubernetes provides a special resource called a **Service Account** to represent application users. Service Accounts are created specifically for applications, not human users. Applications inside or outside the cluster are assigned a Service Account. You can grant permissions to a Service Account by binding it to a Role or ClusterRole using RoleBinding or ClusterRoleBinding.
+To enable authentication for our monitoring application, we'll create a **Service Account** and a corresponding token. This token will authenticate the application.
 
-This way, applications can securely interact with the Kubernetes cluster, restricted to the permissions they've been explicitly granted.
+For **authorization**, we’ll use **RBAC** by creating a role and binding it to the Service Account using a **RoleBinding**. This ensures the monitoring application can access the required resources within the cluster.
 
+By default, Kubernetes assigns a **ServiceAccount** and token to each pod. This Service Account belongs to the default namespace. We can customize our pod's YAML manifest to specify a different Service Account if necessary, instead of using the default one.
+
+## Creating Service Account:
+
+To create a service account, run the following command:
+
+```
+kubectl create sa mysa
+kubectl create sa <service-account-name>
+
+kubectl get sa
+#service account with name mysa is created
+```
+
+Once the service account is created, you can generate a token for it by running:
+
+```
+kubectl create token mysa
+kubectl create token <service-account-name-for-which-token-is-being-created>
+```
+
+## Defining Permissions with Roles for Service Account:
+
+To define roles for the service account, first create a `role.yaml` file with the following contents:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+```
+
+Apply the role to the cluster using:
+
+```
+kubectl apply -f role.yaml
+```
+
+This will create the `pod-reader` role.
+
+Next, create a `rolebinding.yaml` file to bind the role to the service account:
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: mysa
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+Apply the role binding using:
+
+```
+kubectl apply -f rolebinding.yaml
+```
+
+This will bind the `pod-reader` role to the `mysa` service account.
+
+## Attaching Service Account to a Pod:
+
+To attach the service account to a pod, create a `pod.yaml` file with the following contents:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  serviceAccountName: mysa # this attribute is attaching the service account with our pod
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 80
+```
+
+Apply the pod manifest using:
+
+```
+kubectl apply -f pod.yaml
+```
+
+This will create the pod and associate the `mysa` service account with it.
+
+To verify the pod's properties, use:
+
+```
+kubectl describe pod nginx
+```
+
+You should see the following output:
+
+```
+Service Account:  mysa (pod's been attached with our created sa 'mysa')
+Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-76sxp (ro)
+```
+
+This shows that the service account's token is mounted inside the pod's container.
+
+## Verifying Permissions:
+---
+
+To verify what actions the service account can perform, use the following commands:
+
+Check if the service account can `get` pods:
+
+```
+kubectl auth can-i get pod --as=system:serviceaccount:default:mysa
+```
+
+Output: `yes` means the service account has the `get` permission.
+
+Check if the service account can `update` pods:
+
+```
+kubectl auth can-i update pod --as=system:serviceaccount:default:mysa
+```
+
+Output: `no` means the service account does not have the `update` permission.
+
+Check if the service account can `list` pods:
+
+```
+kubectl auth can-i list pod --as=system:serviceaccount:default:mysa
+```
+
+Output: `yes` means the service account has the `list` permission.
+
+Check if the service account can `delete` pods:
+
+```
+kubectl auth can-i delete pod --as=system:serviceaccount:default:mysa
+```
+
+Output: `no` means the service account does not have the `delete` permission.
+```
 ---
 
 ## Summary
