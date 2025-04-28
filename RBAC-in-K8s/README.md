@@ -406,6 +406,8 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:mysa
 Output: `no` means the service account does not have the `delete` permission.
 ```
 
+---
+
 ## Summary
 ---
 
