@@ -273,7 +273,7 @@ kubectl create token <service-account-name-for-which-token-is-being-created>
 
 ## Defining Permissions with Roles for Service Account:
 
-To define roles for the service account, first create a `role.yaml` file with the following contents:
+To define roles for the service account, first create a `sa-role.yaml` file with the following contents:
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -295,12 +295,12 @@ rules:
 Apply the role to the cluster using:
 
 ```
-kubectl apply -f role.yaml
+kubectl apply -f sa-role.yaml
 ```
 
 This will create the `pod-reader` role.
 
-Next, create a `rolebinding.yaml` file to bind the role to the service account:
+Next, create a `sa-rolebinding.yaml` file to bind the role to the service account:
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -321,14 +321,14 @@ roleRef:
 Apply the role binding using:
 
 ```
-kubectl apply -f rolebinding.yaml
+kubectl apply -f sa-rolebinding.yaml
 ```
 
 This will bind the `pod-reader` role to the `mysa` service account.
 
 ## Attaching Service Account to a Pod:
 
-To attach the service account to a pod, create a `pod.yaml` file with the following contents:
+To attach the service account to a pod, create a `sa-pod.yaml` file with the following contents:
 
 ```yaml
 apiVersion: v1
@@ -347,7 +347,7 @@ spec:
 Apply the pod manifest using:
 
 ```
-kubectl apply -f pod.yaml
+kubectl apply -f sa-pod.yaml
 ```
 
 This will create the pod and associate the `mysa` service account with it.
