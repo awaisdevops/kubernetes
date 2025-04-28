@@ -368,7 +368,6 @@ Mounts:
 
 This shows that the service account's token is mounted inside the pod's container.
 
----
 
 ## Verifying Permissions:
 
@@ -410,7 +409,6 @@ Output: `no` means the service account does not have the `delete` permission.
 ---
 
 ## Summary
----
 
 In Kubernetes security, there are two main levels: authentication and authorization.
 
@@ -425,6 +423,5 @@ In short, Kubernetes first verifies who you are, then checks what you are allowe
 ---
 
 ## License
----
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
