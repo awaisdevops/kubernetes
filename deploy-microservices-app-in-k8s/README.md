@@ -1,122 +1,76 @@
 # Deploying a Microservices Application in Kubernetes
 
-## Overview
-We are deploying a microservices-based online shop application into a Kubernetes cluster. The repository includes the Kubernetes manifests for all microservices required to run the application.
+We're deploying a microservices-based **online shop application** into a Kubernetes cluster. This guide covers the process from preparing manifests to applying production best practices.
+
+![Sample Image](assets/1.PNG)
 
 ---
 
-## Environment Setup
+## Complete Process Workflow
 
-- Created YAML files with 11 Deployment and corresponding Service manifests.
-- Note: All service components are internal (`ClusterIP`) services except the **Frontend** service, which is exposed externally.
-- Created a Kubernetes cluster with 3 worker nodes on **Linode** (or any other cloud platform).
-- Connected to the cluster.
-- Created a **Namespace** and deployed all the microservices into it.
-- Accessed the Online Shop from a browser.
+This section focuses on deployment details: which microservices are involved, how they communicate, and their dependencies on third-party services or databases.
 
----
+For example, some services use a message broker, others require a database. It's important to identify the entry-point microservice that handles browser requests.
 
-## Deployment Steps
+### ✅ Key Steps:
 
-1. Deploy the necessary third-party services (e.g., Redis).
-2. Deploy all microservices in a common namespace.
-3. Expose the frontend service via a LoadBalancer.
-4. Access the application through the external IP of the frontend service.
+- ✅ Created YAML files with **11 Deployment** and corresponding **Service manifests**
+- ✅ All services are internal **except** the **Frontend Service**, which is accessible from a browser
+- ✅ Created a Kubernetes cluster with **3 Worker Nodes** (e.g., on Linode or other cloud platforms)
+- ✅ Connected to the cluster
+- ✅ Created a **Namespace** and deployed all microservices
+- ✅ Accessed the Online Shop via a browser
 
 ---
 
 ## Production & Security Best Practices
 
-Following best practices were applied:
-
-- **BP 1**: Added version tags to container images.
-- **BP 2**: Configured **Liveness Probes** for each container.
-- **BP 3**: Configured **Readiness Probes** for each container.
-- **BP 4**: Configured **Resource Requests** for CPU and memory.
-- **BP 5**: Configured **Resource Limits** to cap resource usage.
-- **BP 6**: Avoided `NodePort` service type for external exposure.
-- **BP 7**: Configured multiple replicas where needed.
+- **BP 1**: Added version to each container image  
+- **BP 2**: Configured **Liveness Probes**  
+- **BP 3**: Configured **Readiness Probes**  
+- **BP 4**: Set **Resource Requests**  
+- **BP 5**: Set **Resource Limits**  
+- **BP 6**: Avoided using **NodePort** service type  
+- **BP 7**: Configured **more than 1 replica** for each Deployment  
 
 ---
 
-## Information Gathering
+## List of the Microservices in the Application
 
-To effectively deploy the application, the following information was collected:
+The application consists of the following microservices:
 
-1. **List of Microservices**:
-    - Email Service
-    - Checkout Service
-    - Payment Service
-    - Product Catalog Service
-    - Frontend Service
-    - Cart Service
-    - Redis (third-party)
-    - Currency Service
-    - Shipping Service
-    - Recommendation Service
-    - Ad Service
-
-2. **Communication Details**:
-   - Services communicate using gRPC and REST APIs.
-
-3. **Dependencies**:
-   - Cart Service depends on Redis.
-   - Other services depend on each other as per microservice architecture.
-
-4. **Ports**:
-   - Each service runs on specific ports as configured in the Kubernetes manifests.
-
----
-
-## Preparing the Kubernetes Environment
-
-Steps to prepare the environment:
-
-1. Deploy Redis (third-party service).
-2. Create Kubernetes Secrets and ConfigMaps if needed.
-3. Develop Kubernetes manifests:
-   - Deployment
-   - Service
-4. Deploy all services into a single namespace for easier management.
+- `emailservice`
+- `recommendationservice`
+- `paymentservice`
+- `productcatalogservice`
+- `currencyservice`
+- `shippingservice`
+- `adservice`
+- `cartservice`
+- `checkoutservice`
+- `frontend` _(with external access)_
+- `redis-cart` _(third-party service)_
 
 ---
 
 ## Microservices Connection Graph
 
-> 📌 *A visual graph showing microservices and their dependencies would be placed here.*
+A connection graph helps visualize how services interact.
 
-![Microservices Connection Graph](path/to/your/graph.png)
-
-*Note: You need to replace `path/to/your/graph.png` with the actual graph image location.*
+![Sample Image](assets/1.PNG)
 
 ---
 
 ## Deployment and Service Configurations
 
-The YAML files provided define Kubernetes Deployments and Services for each microservice. Each deployment:
+We created 11 YAML files—1 for each deployment and its corresponding service.
 
-- Specifies container images with versions.
-- Configures liveness and readiness probes.
-- Sets CPU and memory resource requests and limits.
-- Exposes internal services as `ClusterIP`.
-- Exposes the frontend as a `LoadBalancer` service.
-
-Microservices Deployed:
-- **emailservice**
-- **recommendationservice**
-- **paymentservice**
-- **productcatalogservice**
-- **currencyservice**
-- **shippingservice**
-- **adservice**
-- **cartservice**
-- **checkoutservice**
-- **frontend** (with external access)
-- **redis-cart** (third-party service)
-
-Example snippet for one microservice:
+```bash
+kubectl apply -f emailservice.yaml
+```
 
 ```yaml
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -138,10 +92,16 @@ spec:
         env:
         - name: PORT
           value: "8080"
+        - name: DISABLE_TRACING
+          value: "1"
+        - name: DISABLE_PROFILER
+          value: "1"
         readinessProbe:
+          periodSeconds: 5
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
         livenessProbe:
+          periodSeconds: 5
           exec:
             command: ["/bin/grpc_health_probe", "-addr=:8080"]
         resources:
@@ -151,11 +111,37 @@ spec:
           limits:
             cpu: 200m
             memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emailservice
+spec:
+  type: ClusterIP
+  selector:
+    app: emailservice
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 8080
+```
+
+To apply the configuration:
+
+```bash
+kubectl apply -f emailservice.yaml
 ```
 
 ---
 
-## License
+## Notes
 
+- Make sure to maintain consistent naming across deployment and service manifests.
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ```
-MIT License
+
+---
