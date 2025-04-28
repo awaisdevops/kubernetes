@@ -2,7 +2,11 @@
 
 We're deploying a microservices-based **online shop application** into a Kubernetes cluster. This guide covers the process from preparing manifests to applying production best practices.
 
-![Sample Image](Project.mp4)
+![Sample Image](ggg.png)
+
+---
+
+![Sample Image](ttt.png)
 
 ---
 
