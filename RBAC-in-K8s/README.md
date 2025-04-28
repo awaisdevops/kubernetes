@@ -368,6 +368,8 @@ Mounts:
 
 This shows that the service account's token is mounted inside the pod's container.
 
+---
+
 ## Verifying Permissions:
 
 To verify what actions the service account can perform, use the following commands:
@@ -405,7 +407,7 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:mysa
 Output: `no` means the service account does not have the `delete` permission.
 ```
 
-# Kubernetes Authentication and Authorization
+---
 
 ## Summary
 ---
