@@ -405,8 +405,6 @@ kubectl auth can-i delete pod --as=system:serviceaccount:default:mysa
 
 Output: `no` means the service account does not have the `delete` permission.
 ```
----
-
 
 ## Summary
 ---
@@ -422,7 +420,6 @@ For example, when an application like Jenkins sends a request to the API server 
 In short, Kubernetes first verifies who you are, then checks what you are allowed to do.
 
 ---
-
 
 ## License
 ---
