@@ -854,7 +854,6 @@ kubectl apply -f redis-cart.yaml
 ## Notes
 
 - Make sure to maintain consistent naming across deployment and service manifests.
----
 
 ## 📄 License
 
