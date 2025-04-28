@@ -57,7 +57,7 @@ The application consists of the following microservices:
 
 A connection graph helps visualize how services interact.
 
-![Sample Image](assets/1.PNG)
+![Sample Image](Capturejj.PNG)
 
 ---
 
