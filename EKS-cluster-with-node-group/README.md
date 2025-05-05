@@ -95,7 +95,7 @@ Node groups automatically create an ASG. You can manually adjust min/max instanc
 
 ### b. Create a Custom IAM Policy and Attach It to Node Group Role
 
-1. Go to IAM → Policies → Create Policy → JSON tab:
+I. Go to IAM → Policies → Create Policy → JSON tab:
 
    ```json
    {
@@ -118,9 +118,9 @@ Node groups automatically create an ASG. You can manually adjust min/max instanc
    }
    ```
 
-2. Name: `node-group-autoscale-policy`
+II. Name: `node-group-autoscale-policy`
 
-3. Attach this policy to the role `eks-node-group-role`
+III. Attach this policy to the role `eks-node-group-role`
 
 ---
 
@@ -137,7 +137,7 @@ These are automatically added—no manual configuration is required.
 
 ## Deploy Cluster Autoscaler
 
-1. **Deploy**:
+a. **Deploy**:
 
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
@@ -145,13 +145,13 @@ These are automatically added—no manual configuration is required.
 
    > Change the image tag from `v1.31.2` to `v1.31.1` before/after applying.
 
-2. **Verify Deployment**:
+b. **Verify Deployment**:
 
    ```bash
    kubectl get deployment -n kube-system cluster-autoscaler
    ```
 
-3. **Edit Deployment**:
+c. **Edit Deployment**:
 
    ```bash
    kubectl edit deployment -n kube-system cluster-autoscaler
@@ -171,19 +171,19 @@ These are automatically added—no manual configuration is required.
      ```
    * Update the image tag with correct K8s version
 
-4. **Verify Running Pod**:
+d. **Verify Running Pod**:
 
    ```bash
    kubectl get pods -n kube-system
    ```
 
-5. **Check Node**:
+e. **Check Node**:
 
    ```bash
    kubectl get pod <autoscaler-pod-name> -n kube-system -o wide
    ```
 
-6. **View Logs**:
+f. **View Logs**:
 
    ```bash
    kubectl logs -n kube-system <autoscaler-pod-name>
