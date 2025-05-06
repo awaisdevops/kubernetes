@@ -86,6 +86,8 @@ Additionally, in the Subnet section of the Fargate profile configuration, select
 
 ### Now you can deploy your application. 
 
+---
+
 ## License
 
 MIT License - See LICENSE file for details.
