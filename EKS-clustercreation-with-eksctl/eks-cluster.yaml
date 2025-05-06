@@ -1,0 +1,53 @@
+# EKS cluster configuration file for eksctl
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: my-eks-cluster          # Name of the EKS cluster
+  region: us-west-2             # AWS region where the cluster will be deployed
+
+# Configuration for EC2-based node group
+nodeGroups:
+  - name: eks-node-group        # Name of the node group
+    instanceType: t3.medium     # EC2 instance type for the nodes
+    desiredCapacity: 2          # Number of nodes to start with
+    minSize: 1                  # Minimum number of nodes in the group
+    maxSize: 3                  # Maximum number of nodes in the group
+    volumeSize: 50              # EBS volume size in GiB for each node
+    volumeType: gp2             # Volume type
+    ssh:
+      publicKeyName: eks-key    # Name of the existing EC2 key pair for SSH access
+    labels:
+      app: web-app              # Labels applied to the nodes
+    taints:
+      - effect: NoSchedule      # Taint effect (NoSchedule prevents non-tolerating pods from running)
+        key: dedicated
+        value: fargate          # Taint value to restrict usage to certain pods
+
+# Configuration for AWS Fargate profile
+fargateProfiles:
+  - name: fargate-profile       # Name of the Fargate profile
+    selectors:
+      - namespace: default      # Namespace whose pods should run on Fargate
+      - labels:
+          app: web-app          # Label selector to run matching pods on Fargate
+
+# EKS managed add-ons to install
+addons:
+  - name: vpc-cni               # Amazon VPC CNI plugin for networking
+    version: latest             # Use the latest version
+  - name: kube-proxy            # Kube-proxy for networking
+  - name: coreDNS               # CoreDNS for service discovery
+
+# IAM configuration
+iam:
+  serviceRole: arn:aws:iam::<account-id>:role/eks-cluster-role  # IAM role ARN for the EKS control plane
+
+# VPC configuration
+vpc:
+  cidr: 192.168.0.0/16           # Custom CIDR block for the VPC
+  subnets:
+    private:
+      - cidr: 192.168.1.0/24     # Private subnet CIDR
+    public:
+      - cidr: 192.168.2.0/24     # Public subnet CIDR
