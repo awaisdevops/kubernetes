@@ -1,0 +1,11 @@
+curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/latest/bin/linux/amd64/aws-iam-authenticator
+# Download the latest AWS IAM Authenticator binary for Linux
+
+chmod +x aws-iam-authenticator
+# Make the binary executable
+
+sudo mv aws-iam-authenticator /usr/local/bin/
+# Move the binary to a directory in your system PATH
+
+aws-iam-authenticator help
+# Verify the installation

@@ -1,0 +1,23 @@
+sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates curl
+# Update the package list and install required dependencies
+
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+# Download the Google Cloud public signing key
+
+
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | \
+sudo tee /etc/apt/sources.list.d/kubernetes.list > /dev/null
+# Add the Kubernetes APT repository
+
+
+sudo apt-get update
+# Update the package list with the new Kubernetes repo
+
+
+sudo apt-get install -y kubectl
+# Install kubectl
+
+
+kubectl version --client
+# Verify that kubectl is installed correctly

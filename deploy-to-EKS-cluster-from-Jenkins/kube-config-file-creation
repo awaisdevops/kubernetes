@@ -1,0 +1,7 @@
+aws eks --region <your-region> update-kubeconfig --name <your-cluster-name>
+# Creates or updates the kubeconfig file at ~/.kube/config with access details for the specified EKS cluster
+# <your-region> is your AWS region (e.g., us-east-1)
+# <your-cluster-name> is the name of your EKS cluster
+
+aws eks --region us-east-1 update-kubeconfig --name my-eks-cluster
+# Connects kubectl to the EKS cluster named "my-eks-cluster" in the "us-east-1" region by generating the config file
