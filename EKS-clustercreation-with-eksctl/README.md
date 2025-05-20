@@ -2,6 +2,15 @@
 
 Manually creating an EKS cluster with roles, VPCs, and configurations is time-consuming and hard to replicate. To simplify this, eksctl is a command-line tool that automates cluster creation. It handles roles, VPCs, and configurations in the background, allowing customization with options like Kubernetes version, region, and node types. Using eksctl eliminates the need for manual setup, making the process more efficient with a single command.
 
+### Technologies Used
+- Kubernetes
+- AWS EKS
+- eksctl
+- Linux
+
+### Project Description
+- Create EKS cluster using eksctl tool that reduces the manual effort of creating an EKS cluster
+
 ---
 
 ## EKS Cluster Creation Options
@@ -115,11 +124,97 @@ vpc:
     public:
       - cidr: 192.168.2.0/24     # Public subnet CIDR
 ```
+### Create the cluster using the configuration file with the eksctl tool.
 
-### -->> eksctl create cluster -f eks-cluster.yaml
+```bash
+eksctl create cluster -f eks-cluster.yaml
 
-Create the cluster using the configuration file with the eksctl tool.
+# 2023-05-18 15:36:18 [ℹ]  eksctl version 0.141.0
+# 2023-05-18 15:36:18 [ℹ]  using region eu-central-1
+# 2023-05-18 15:36:18 [ℹ]  setting availability zones to [eu-central-1c eu-central-1b eu-central-1a]
+# 2023-05-18 15:36:18 [ℹ]  subnets for eu-central-1c - public:192.168.0.0/19 private:192.168.96.0/19
+# 2023-05-18 15:36:18 [ℹ]  subnets for eu-central-1b - public:192.168.32.0/19 private:192.168.128.0/19
+# 2023-05-18 15:36:18 [ℹ]  subnets for eu-central-1a - public:192.168.64.0/19 private:192.168.160.0/19
+# 2023-05-18 15:36:18 [ℹ]  nodegroup "demo-nodes" will use "" [AmazonLinux2/1.26]
+# 2023-05-18 15:36:18 [ℹ]  using Kubernetes version 1.26
+# 2023-05-18 15:36:18 [ℹ]  creating EKS cluster "demo-cluster" in "eu-central-1" region with managed nodes
+# 2023-05-18 15:36:18 [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial managed nodegroup
+# 2023-05-18 15:36:18 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=eu-central-1 --cluster=demo-cluster'
+# 2023-05-18 15:36:18 [ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "demo-cluster" in "eu-central-1"
+# 2023-05-18 15:36:18 [ℹ]  CloudWatch logging will not be enabled for cluster "demo-cluster" in "eu-central-1"
+# 2023-05-18 15:36:18 [ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=eu-central-1 --cluster=demo-cluster'
+# 2023-05-18 15:36:18 [ℹ]  
+# 2 sequential tasks: { create cluster control plane "demo-cluster", 
+#     2 sequential sub-tasks: { 
+#         wait for control plane to become ready,
+#         create managed nodegroup "demo-nodes",
+#     } 
+# }
+# 2023-05-18 15:36:18 [ℹ]  building cluster stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:36:19 [ℹ]  deploying stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:36:49 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:37:19 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:38:19 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:39:20 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:40:20 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:41:20 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:42:20 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:43:20 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:44:21 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:45:21 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:46:21 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:47:21 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:48:21 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-cluster"
+# 2023-05-18 15:50:23 [ℹ]  building managed nodegroup stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:50:24 [ℹ]  deploying stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:50:24 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:50:54 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:51:33 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:53:07 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:53:49 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:54:29 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:55:53 [ℹ]  waiting for CloudFormation stack "eksctl-demo-cluster-nodegroup-demo-nodes"
+# 2023-05-18 15:55:53 [ℹ]  waiting for the control plane to become ready
+# 2023-05-18 15:55:54 [✔]  saved kubeconfig as "/Users/fsiegrist/.kube/config"
+# 2023-05-18 15:55:54 [ℹ]  no tasks
+# 2023-05-18 15:55:54 [✔]  all EKS cluster resources for "demo-cluster" have been created
+# 2023-05-18 15:55:54 [ℹ]  nodegroup "demo-nodes" has 2 node(s)
+# 2023-05-18 15:55:54 [ℹ]  node "ip-192-168-48-96.eu-central-1.compute.internal" is ready
+# 2023-05-18 15:55:54 [ℹ]  node "ip-192-168-64-248.eu-central-1.compute.internal" is ready
+# 2023-05-18 15:55:54 [ℹ]  waiting for at least 1 node(s) to become ready in "demo-nodes"
+# 2023-05-18 15:55:54 [ℹ]  nodegroup "demo-nodes" has 2 node(s)
+# 2023-05-18 15:55:54 [ℹ]  node "ip-192-168-48-96.eu-central-1.compute.internal" is ready
+# 2023-05-18 15:55:54 [ℹ]  node "ip-192-168-64-248.eu-central-1.compute.internal" is ready
+# 2023-05-18 15:55:55 [ℹ]  kubectl command should work with "/Users/fsiegrist/.kube/config", try 'kubectl get nodes'
+# 2023-05-18 15:55:55 [✔]  EKS cluster "demo-cluster" in "eu-central-1" region is ready
 
+```
+
+After nearly 20 minutes the cluster is ready. Kubectl was automatically configured to connect to the new cluster. The configuration is stored in `~/.kube/config`.
+
+Let's review the created cluster now. 
+
+```sh
+eksctl get clusters
+# NAME	        REGION        EKSCTL CREATED
+# demo-cluster  eu-central-1  True
+
+kubectl get nodes
+# NAME                                              STATUS   ROLES    AGE     VERSION
+# ip-192-168-48-96.eu-central-1.compute.internal    Ready    <none>   6m12s   v1.26.2-eks-a59e1f0
+# ip-192-168-64-248.eu-central-1.compute.internal   Ready    <none>   6m11s   v1.26.2-eks-a59e1f0
+
+aws iam list-roles --query "Roles[].RoleName"
+# [
+#     "AWSServiceRoleForAmazonEKS",
+#     "AWSServiceRoleForAmazonEKSNodegroup",
+#     "AWSServiceRoleForAutoScaling",
+#     "AWSServiceRoleForSupport",
+#     "AWSServiceRoleForTrustedAdvisor",
+#     "eksctl-demo-cluster-cluster-ServiceRole-E4TVKLGKTBIZ",
+#     "eksctl-demo-cluster-nodegroup-dem-NodeInstanceRole-KJW6DGERTROS"
+# ]
+```
 ---
 
 ## License
