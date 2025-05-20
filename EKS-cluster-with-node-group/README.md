@@ -168,12 +168,31 @@ These are automatically added—no manual configuration is required.
 ## Deploy Cluster Autoscaler
 
 a. **Deploy**:
+Execute the following commands on your local machine:
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+# serviceaccount/cluster-autoscaler created
+# clusterrole.rbac.authorization.k8s.io/cluster-autoscaler created
+# role.rbac.authorization.k8s.io/cluster-autoscaler created
+# clusterrolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
+# rolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
+# deployment.apps/cluster-autoscaler created
 
-   ```bash
-   kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
-   ```
+kubectl get deployment cluster-autoscaler -n kube-system
+# NAME                 READY   UP-TO-DATE   AVAILABLE   AGE
+# cluster-autoscaler   1/1     1            1           70s
 
-   > Change the image tag from `v1.31.2` to `v1.31.1` before/after applying.
+kubectl edit deployment cluster-autoscaler -n kube-system
+# -> in metadata:annotations add the following line after 'deployment.kubernetes.io/revision: "1"':
+#    'cluster-autoscaler.kubernetes.io/safe-to-evict: "false"'
+# -> in spec:template:spec:containers replace '<YOUR CLUSTER NAME>' with 'eks-cluster-test'
+#    and add the options '- --balance-similar-node-groups' 
+#                    and '- --skip-nodes-with-system-pods=false'
+# -> make sure the spec:template:spec:containers:image version matches the Kubernetes version used in the EKS cluster (1.26); get the exact tag (1.26.2) from https://github.com/kubernetes/autoscaler/tags
+```
+
+Of course you can also first download the [autoscaler configurationfile](https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml), make all the changes and then deploy it.
+```
 
 b. **Verify Deployment**:
 
@@ -211,6 +230,16 @@ e. **Check Node**:
 
    ```bash
    kubectl get pod <autoscaler-pod-name> -n kube-system -o wide
+   # NAME                                  READY   STATUS    RESTARTS   AGE
+# aws-node-4k2f7                        1/1     Running   0          5h27m
+# aws-node-k9thp                        1/1     Running   0          5h27m
+# cluster-autoscaler-7798975c7f-dmz95   1/1     Running   0          2m
+# coredns-788b9c9454-5rp7t              1/1     Running   0          7h25m
+# coredns-788b9c9454-m4twb              1/1     Running   0          7h25m
+# kube-proxy-fdg4k                      1/1     Running   0          5h27m
+# kube-proxy-rwvzc                      1/1     Running   0          5h27m
+
+kubectl logs cluster-autoscaler-7798975c7f-dmz95 -n kube-system | less
    ```
 
 f. **View Logs**:
