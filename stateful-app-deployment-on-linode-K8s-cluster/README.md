@@ -66,18 +66,6 @@ helm version
 7. Review pricing
 8. Click "Create Cluster"
 9. Wait a few minutes for provisioning
-
-On your local machine set the environment variable KUBECONFIG to this file:
-```sh
-export KUBECONFIG=</path/to/download-folder>/devops-bootcamp-kubeconfig.yaml
-
-# now kubectl commands will be connected with the linode cluster
-kubectl get nodes
-# =>
-# NAME                            STATUS   ROLES    AGE   VERSION
-# lke104424-156177-6445973ec1e1   Ready    <none>   19m   v1.26.3
-# lke104424
-```
 ---
 
 ## Access and Configure `kubectl` to Use Your Cluster
