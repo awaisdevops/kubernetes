@@ -8,6 +8,18 @@ In this guide, we'll learn how to create an AWS EKS cluster from AWS Management 
 
 In this project, we'll learn how to manually set up an Amazon EKS cluster using the AWS Management Console. It involves creating IAM roles for EKS and EC2 to manage permissions, setting up a VPC for the worker nodes, and creating the EKS cluster with master nodes managed by AWS. After connecting to the cluster via `kubectl`, a node group of EC2 instances is created and attached as worker nodes. Auto scaling is then configured to adjust the number of worker nodes based on resource demands, and finally, you can deploy your application into the provisioned cluster.
 
+### Technologies Used
+- Kubernetes
+- AWS EKS
+
+### Project Description
+- Configure necessary IAM Roles
+- Create VPC with Cloudformation Template for Worker Nodes
+- Create EKS cluster (Control Plane Nodes)
+- Create Node Group for Worker Nodes and attach to EKS cluster
+- Configure Auto-Scaling of worker nodes
+- Deploy a sample application to EKS cluster
+
 ---
 
 ## Table of Contents
@@ -53,13 +65,31 @@ We'll use AWS-provided CloudFormation template:
 
 ## 4. Connect `kubectl` with EKS Cluster Locally
 
-```bash
+Even if we don't have any worker nodes running, we can connect to the EKS cluster using kubectl from our local machine. We create a kubeconfig file and check the connection with the following commands:
+```sh
+# make sure your aws configuration is set to the region of the EKS cluster
 aws configure list
-aws eks update-kubeconfig --name eks-cluster-test
-kubectl cluster-info
-````
+#       Name                    Value             Type    Location
+#       ----                    -----             ----    --------
+#    profile                <not set>             None    None
+# access_key     ****************BDVT shared-credentials-file    
+# secret_key     ****************eXn0 shared-credentials-file    
+#     region             eu-central-1      config-file    ~/.aws/config
 
-The kubeconfig is saved in `~/.kube/config`.
+# make sure there is no old ~/.kube/config file
+rm ~/.kube/config
+# or
+mv ~/.kube/config ~/.kube/config_backup
+
+# now create a new ~/.kube/config file
+aws eks update-kubeconfig --name eks-cluster-test
+# Added new context arn:aws:eks:eu-central-1:369076538622:cluster/eks-cluster-test to ~/.kube/config
+
+# check the connection
+kubectl cluster-info
+# Kubernetes control plane is running at https://73A57A23BA7BAAE56115E5F68C988976.gr7.eu-central-1.eks.amazonaws.com
+# CoreDNS is running at https://73A57A23BA7BAAE56115E5F68C988976.gr7.eu-central-1.eks.amazonaws.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
 
 ---
 
