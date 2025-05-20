@@ -1,0 +1,50 @@
+# Deployment default values
+# -------------------------
+replicaCount: 2
+image: gcr.io/google-samples/microservices-demo/servicename
+imageVersion: v0.6.0
+
+containerPort: 8080
+containerEnvVars:
+- name: ENV_VAR_ONE
+  value: "value-one"
+- name: ENV_VAR_TWO
+  value: "value-two"  
+
+readinessProbeInitialDelaySeconds: 0
+readinessProbePeriodSeconds: 5
+readinessProbeType: "exec"
+readinessProbeCommand: "/bin/grpc_health_probe"
+readinessProbeArg: "-addr=:8080"
+# default values for readinessProbeType "httpGet"
+readinessProbeHttpGetPath: "/_healthz"
+readinessProbeHttpGetPort: 8080
+readinessProbeHttpGetHeaders:
+- name: "Cookie"
+  value: "shop_session-id=x-readiness-probe"
+# default values for readinessProbeType "tcpSocket"
+readinessProbeTcpSocketPort: 8080
+
+livenessProbeInitialDelaySeconds: 0
+livenessProbePeriodSeconds: 5
+livenessProbeType: "exec"
+livenessProbeCommand: "/bin/grpc_health_probe"
+livenessProbeArg: "-addr=:8080"
+# default values for livenessProbeType "httpGet"
+livenessProbeHttpGetPath: "/_healthz"
+livenessProbeHttpGetPort: 8080
+livenessProbeHttpGetHeaders:
+- name: "Cookie"
+  value: "shop_session-id=x-liveness-probe"
+# default values for livenessProbeType "tcpSocket"
+livenessProbeTcpSocketPort: 8080
+
+cpuRequests: 100m
+memoryRequests: 64Mi
+cpuLimits: 200m
+memoryLimits: 128Mi
+
+# Service default values
+# ----------------------
+serviceType: ClusterIP
+servicePort: 8080

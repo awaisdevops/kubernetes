@@ -1,0 +1,30 @@
+# Deployment default values
+# -------------------------
+replicaCount: 1
+image: redis
+imageVersion: alpine
+
+containerPort: 8080
+
+volumeName: redis-data
+containerMountPath: /data
+
+readinessProbeInitialDelaySeconds: 0
+readinessProbePeriodSeconds: 5
+readinessProbeType: "tcpSocket"
+readinessProbeTcpSocketPort: 8080
+
+livenessProbeInitialDelaySeconds: 0
+livenessProbePeriodSeconds: 5
+livenessProbeType: "tcpSocket"
+livenessProbeTcpSocketPort: 8080
+
+cpuRequests: 100m
+memoryRequests: 64Mi
+cpuLimits: 200m
+memoryLimits: 128Mi
+
+# Service default values
+# ----------------------
+serviceType: ClusterIP
+servicePort: 8080

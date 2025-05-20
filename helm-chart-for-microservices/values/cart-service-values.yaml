@@ -1,0 +1,13 @@
+image: gcr.io/google-samples/microservices-demo/cartservice
+containerPort: 7070
+containerEnvVars:
+- name: PORT
+  value: "7070"
+- name: REDIS_ADDR
+  value: "rediscart:6379"  
+readinessProbeArg: "-addr=:7070"
+livenessProbeArg: "-addr=:7070"
+cpuRequests: 200m
+cpuLimits: 300m
+
+servicePort: 7070

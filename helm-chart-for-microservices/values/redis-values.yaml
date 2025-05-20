@@ -1,0 +1,10 @@
+replicaCount: 1
+containerPort: 6379
+readinessProbeTcpSocketPort: 6379
+livenessProbeTcpSocketPort: 6379
+cpuRequests: 70m
+memoryRequests: 200Mi
+cpuLimits: 125m
+memoryLimits: 256Mi
+
+servicePort: 6379

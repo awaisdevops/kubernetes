@@ -1,0 +1,9 @@
+image: gcr.io/google-samples/microservices-demo/emailservice
+containerPort: 8080
+containerEnvVars:
+- name: PORT
+  value: "8080"
+readinessProbeArg: "-addr=:8080"
+livenessProbeArg: "-addr=:8080"
+
+servicePort: 5000

@@ -1,0 +1,9 @@
+image: gcr.io/google-samples/microservices-demo/shippingservice
+containerPort: 50051
+containerEnvVars:
+- name: PORT
+  value: "50051"
+readinessProbeArg: "-addr=:50051"
+livenessProbeArg: "-addr=:50051"
+
+servicePort: 50051
