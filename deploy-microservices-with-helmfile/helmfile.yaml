@@ -1,0 +1,57 @@
+releases:
+  - name: rediscart
+    chart: helmcharts/redis
+    values: 
+      - values/redis-values.yaml
+      - replicaCount: 1
+      - volumeName: "redis-cart-data"
+  
+  - name: emailservice
+    chart: helmcharts/shop
+    values:
+      - values/email-service-values.yaml
+
+  - name: cartservice
+    chart: helmcharts/shop
+    values:
+      - values/cart-service-values.yaml    
+
+  - name: currencyservice
+    chart: helmcharts/shop
+    values:
+      - values/currency-service-values.yaml   
+
+  - name: paymentservice
+    chart: helmcharts/shop
+    values:
+      - values/payment-service-values.yaml
+
+  - name: recommendationservice
+    chart: helmcharts/shop
+    values:
+      - values/recommendation-service-values.yaml
+
+  - name: productcatalogservice
+    chart: helmcharts/shop
+    values:
+      - values/productcatalog-service-values.yaml
+
+  - name: shippingservice
+    chart: helmcharts/shop
+    values:
+      - values/shipping-service-values.yaml
+
+  - name: adservice
+    chart: helmcharts/shop
+    values:
+      - values/ad-service-values.yaml
+
+  - name: checkoutservice
+    chart: helmcharts/shop
+    values:
+      - values/checkout-service-values.yaml
+
+  - name: frontend
+    chart: helmcharts/shop
+    values:
+      - values/frontend-values.yaml

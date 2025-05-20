@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.image }}:{{ .Values.imageVersion }}
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        env:
+        {{- range .Values.containerEnvVars }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        readinessProbe:
+          initialDelaySeconds: {{ .Values.readinessProbeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
+          {{- if eq .Values.readinessProbeType "exec" }}
+          exec:
+            command: [{{ .Values.readinessProbeCommand | quote }}, {{ .Values.readinessProbeArg | quote }}]
+          {{- else if eq .Values.readinessProbeType "httpGet" }}
+          httpGet:
+            path: {{ .Values.readinessProbeHttpGetPath | quote }}
+            port: {{ .Values.readinessProbeHttpGetPort }}
+            httpHeaders:
+            {{- range .Values.readinessProbeHttpGetHeaders }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- else if eq .Values.readinessProbeType "tcpSocket" }}
+          tcpSocket:
+            port: {{ .Values.readinessProbeTcpSocketPort }}
+          {{- else }}
+            exec:
+              command: ["echo", "'OK'"]
+          {{- end }}
+        livenessProbe:
+          initialDelaySeconds: {{ .Values.livenessProbeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
+          {{- if eq .Values.livenessProbeType "exec" }}
+          exec:
+            command: [{{ .Values.livenessProbeCommand | quote }}, {{ .Values.livenessProbeArg | quote }}]
+          {{- else if eq .Values.livenessProbeType "httpGet" }}
+          httpGet:
+            path: {{ .Values.livenessProbeHttpGetPath | quote }}
+            port: {{ .Values.livenessProbeHttpGetPort }}
+            httpHeaders:
+            {{- range .Values.livenessProbeHttpGetHeaders }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- else if eq .Values.livenessProbeType "tcpSocket" }}
+          tcpSocket:
+            port: {{ .Values.livenessProbeTcpSocketPort }}
+          {{- else }}
+            exec:
+              command: ["echo", "'OK'"]
+          {{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.cpuRequests }}
+            memory: {{ .Values.memoryRequests }}
+          limits:
+            cpu: {{ .Values.cpuLimits }}
+            memory: {{ .Values.memoryLimits }}

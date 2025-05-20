@@ -1,0 +1,9 @@
+image: gcr.io/google-samples/microservices-demo/productcatalogservice
+containerPort: 3550
+containerEnvVars:
+- name: PORT
+  value: "3550"
+readinessProbeArg: "-addr=:3550"
+livenessProbeArg: "-addr=:3550"
+
+servicePort: 3550

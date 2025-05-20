@@ -1,0 +1,13 @@
+image: gcr.io/google-samples/microservices-demo/recommendationservice
+containerPort: 8080
+containerEnvVars:
+- name: PORT
+  value: "8080"
+- name: PRODUCT_CATALOG_SERVICE_ADDR
+  value: "productcatalogservice:3550"
+readinessProbeArg: "-addr=:8080"
+livenessProbeArg: "-addr=:8080"
+memoryRequests: 220Mi
+memoryLimits: 450Mi
+
+servicePort: 8080
