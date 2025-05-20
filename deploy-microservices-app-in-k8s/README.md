@@ -881,11 +881,139 @@ spec:
     targetPort: 6379
 ```
 
-To apply the configuration:
+#### Steps to deploy the microservices to Linode’s managed Kubernetes cluster
+**Step 1:** Create Linode Kubernetes cluster with three nodes\
+We login to our Linode account, open the Kubernetes page and press the "Create Cluster" button. We enter the "Cluster Label" 'online-shop-microservices', select the region 'Frankfurt, DE (eu-central)' and the latest Kubernetes version (1.26). In the "Add Node Pools" section we select the "Shared CPU" tab and add three 'Linode 4 GB' servers. We press the "Create Cluster" button and download the 'online-shop-microservices-kubeconfig.yaml' file.
 
-```bash
-kubectl apply -f redis-cart.yaml
+**Step 2:** Configure local machine
+On our local machine we restrict the file permissions for the downloaded file and set the environment variable `KUBECONFIG` to the path of the file:
+```sh
+# we are still in the online-shop-microservices directory
+mv ~/Downloads/online-shop-microservices-kubeconfig.yaml .
+chmod 400 ./online-shop-microservices-kubeconfig.yaml
+export KUBECONFIG=$(pwd)/online-shop-microservices-kubeconfig.yaml
+
+# test the connection
+kubectl get nodes
+# =>
+# NAME                            STATUS   ROLES    AGE   VERSION
+# lke106346-158982-6452c20f5fbc   Ready    <none>   77s   v1.26.3
+# lke106346-158982-6452c20fbf34   Ready    <none>   46s   v1.26.3
+# lke106346-158982-6452c2101d2f   Ready    <none>   59s   v1.26.3
 ```
+
+**Step 3:** Create a namespace and deploy the microservices\
+We execute the following commands:
+```sh
+kubectl create namespace microservices
+kubectl apply -f config.yaml -n microservices
+# =>
+# deployment.apps/emailservice created
+# service/emailservice created
+# deployment.apps/recommendationservice created
+# service/recommendationservice created
+# deployment.apps/paymentservice created
+# service/paymentservice created
+# deployment.apps/productcatalogservice created
+# service/productcatalogservice created
+# deployment.apps/currencyservice created
+# service/currencyservice created
+# deployment.apps/shippingservice created
+# service/shippingservice created
+# deployment.apps/adservice created
+# service/adservice created
+# deployment.apps/cartservice created
+# service/cartservice created
+# deployment.apps/checkoutservice created
+# service/checkoutservice created
+# deployment.apps/frontend created
+# service/frontend created
+# deployment.apps/redis-cart created
+# service/redis-cart created
+
+kubectl get pods -n microservices
+# =>
+# NAME                                     READY   STATUS             RESTARTS        AGE
+# adservice-6495d7f86-b8t5t                1/1     Running            1 (6m9s ago)    6m30s
+# cartservice-7c99bd7945-vsdzk             1/1     Running            0               6m30s
+# checkoutservice-b4746cd88-rf5zr          1/1     Running            0               3m9s
+# currencyservice-69b8c58656-742zt         0/1     CrashLoopBackOff   5 (2m44s ago)   6m30s
+# emailservice-67785f9598-znvgf            1/1     Running            0               7m27s
+# frontend-8f4b9777d-wvmtg                 1/1     Running            0               3m9s
+# paymentservice-6fbc8967d-4r98t           0/1     CrashLoopBackOff   4 (82s ago)     3m9s
+# productcatalogservice-845969555d-h78kn   1/1     Running            0               6m30s
+# recommendationservice-54dcb96dfd-gmd2q   1/1     Running            0               7m27s
+# redis-cart-846556db8f-l7whs              1/1     Running            0               3m8s
+# shippingservice-5459f64756-87mwl         1/1     Running            0               6m30s
+```
+
+The currencyservice and the paymentservice seem to have problems. Let's check the logs of the currencyservice Pod:
+```sh
+kubectl logs currencyservice-69b8c58656-742zt -n microservices
+# =>
+# Profiler enabled.
+# Tracing disabled.
+# ...
+# /usr/src/app/node_modules/@google-cloud/profiler/build/src/index.js:120
+#         throw new Error('Project ID must be specified in the configuration');
+#               ^
+# 
+# Error: Project ID must be specified in the configuration
+#     at initConfigMetadata (/usr/src/app/node_modules/@google-cloud/profiler/build/src/index.js:120:15)
+#     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+#     at async createProfiler (/usr/src/app/node_modules/@google-cloud/profiler/build/src/index.js:158:26)
+#     at async Object.start (/usr/src/app/node_modules/@google-cloud/profiler/build/src/index.js:182:22)
+```
+There seems to be a problem while creating a profiler. The [Source Code](https://github.com/GoogleCloudPlatform/microservices-demo/blob/main/src/currencyservice/server.js) shows that the profiler can be disabled by setting an environment variable `DISABLE_PROFILER` to a truthy value.
+
+The paymentservice seems to have the same problem. So we set an additional env variable named `DISABLE_PROFILER` to `"true"` on both services:
+```yaml
+- name: DISABLE_PROFILER
+  value: "true"
+```
+
+Now we re-apply the config and check the result:
+```sh
+kubectl apply -f config.yaml -n microservices
+
+kubectl get pods -n microservices
+# =>
+# NAME                                     READY   STATUS    RESTARTS      AGE
+# adservice-6495d7f86-b8t5t                1/1     Running   1 (38m ago)   39m
+# cartservice-7c99bd7945-vsdzk             1/1     Running   0             39m
+# checkoutservice-b4746cd88-rf5zr          1/1     Running   0             35m
+# currencyservice-65859cc6dd-fqq7t         1/1     Running   0             24s
+# emailservice-67785f9598-znvgf            1/1     Running   0             40m
+# frontend-8f4b9777d-wvmtg                 1/1     Running   0             35m
+# paymentservice-7f84986fd6-kthfv          1/1     Running   0             25s
+# productcatalogservice-845969555d-h78kn   1/1     Running   0             39m
+# recommendationservice-54dcb96dfd-gmd2q   1/1     Running   0             40m
+# redis-cart-846556db8f-l7whs              1/1     Running   0             35m
+# shippingservice-5459f64756-87mwl         1/1     Running   0             39m
+```
+
+The problems with the currencyservice and paymentservice seem to be solved.
+
+**Step 4:** Browse the application\
+We execute the following command to get the external IP address of the frontend service:
+```sh
+kubectl get services -n microservices
+# =>
+# NAME                    TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)        AGE
+# adservice               ClusterIP      10.128.251.254   <none>           9555/TCP       39m
+# cartservice             ClusterIP      10.128.71.146    <none>           7070/TCP       39m
+# checkoutservice         ClusterIP      10.128.26.171    <none>           5050/TCP       35m
+# currencyservice         ClusterIP      10.128.151.69    <none>           7000/TCP       37s
+# emailservice            ClusterIP      10.128.248.152   <none>           5000/TCP       40m
+# frontend                LoadBalancer   10.128.151.91    172.105.146.79   80:31829/TCP   35m
+# paymentservice          ClusterIP      10.128.103.97    <none>           50051/TCP      38s
+# productcatalogservice   ClusterIP      10.128.33.135    <none>           3550/TCP       39m
+# recommendationservice   ClusterIP      10.128.174.59    <none>           8080/TCP       40m
+# redis-cart              ClusterIP      10.128.92.165    <none>           6379/TCP       35m
+# shippingservice         ClusterIP      10.128.161.92    <none>           50051/TCP      39m
+```
+
+We open the browser and navigate to `http://172.105.146.79` to see the microservices application "boutique" in action.
 
 ---
 
