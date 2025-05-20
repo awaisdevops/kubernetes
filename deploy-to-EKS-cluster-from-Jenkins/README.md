@@ -4,6 +4,19 @@ We are assuming that you already have an AWS EKS cluster up and running.
 
 Before we proceed deploying our application to the cluster, we need to configure the following on the Jenkins server:
 
+### Technologies Used
+- Kubernetes
+- Jenkins
+- AWS EKS
+- Docker
+- Linux
+
+### Project Description
+- Install kubectl and aws-iam-authenticator on a Jenkins server
+- Create kubeconfig file to connect to EKS cluster and add it on Jenkins server
+- Add AWS credentials on Jenkins for AWS account authentication
+- Extend and adjust Jenkinsfile of the previous CI/CD pipeline to configure connection to EKS cluster
+
 ## 1. Install Required Tools in Jenkins
 
 - `kubectl`: for interacting with the Kubernetes cluster  
@@ -150,6 +163,11 @@ pipeline {
     }
 }
 ```
+
+We just use the 'deploy' stage where we execute a kubectl command to create an nginx deployment. If we execute kubectl commands on our local machine, authentication against AWS is done using the file ~/.aws/credentials. Another possibility is to set environment variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY containing the same information. As we don't have an ~/.aws/credentials file in the Jenkins container, we set the two environment variables. The values are taken from the two 'secret text' credentials we just created.
+
+We add, commit and push the new branch to the Git repository.
+
 ---
 
 **nginx-deployment.yaml:**
@@ -190,7 +208,18 @@ spec:
       port: 80
       targetPort: 80
 ```
+
+### Execute Jenkins Pipeline
+If we have configured the multibranch pipeline on Jenkins to build all branches, the new branch will be automatically detected, a new pipeline will be created and the build will be automatically started.
+
+After it has successfully finished, we open a terminal on our local machine and check the deployment:
+```sh
+kubectl get pods
+# NAME                                READY   STATUS    RESTARTS   AGE
+# nginx-deployment-55888b446c-bflcs   1/1     Running   0          2m41s
+```
 ---
+
 
 ## License
 
