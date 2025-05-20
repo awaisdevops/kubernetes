@@ -2,6 +2,14 @@
 
 In this guide, I explained that **ConfigMap** and **Secret** in Kubernetes are used to create key-value pairs for environmental variables or configuration files that can be passed to applications. These are common in services that require external configuration files. Additionally, **ConfigMap** and **Secret** are actually considered volume types in Kubernetes.
 
+### Technologies Used
+- Kubernetes
+- Docker
+- Mosquitto
+
+### Project Description
+- Define configuration and passwords for Mosquitto message broker with ConfigMap and Secret Volume types
+
 ---
 
 # Configuration Files for Mosquitto Deployment, Secret, and ConfigMap Components:
