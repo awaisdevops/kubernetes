@@ -36,6 +36,7 @@ kubectl get nodes
 # NAME                            STATUS   ROLES    AGE   VERSION
 # lke104424-156177-6445973ec1e1   Ready    <none>   19m   v1.26.3
 # lke104424
+```
 ---
 
 ## Pre-requisites for the Guide
