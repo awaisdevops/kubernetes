@@ -2,6 +2,19 @@
 
 This project demonstrates how to deploy an application from Jenkins to a Kubernetes cluster hosted on **Linode Kubernetes Engine (LKE)**. Compared to platforms like AWS EKS, Linode simplifies the authentication process and offers easier environment portability.
 
+### Technologies Used
+- Kubernetes
+- Jenkins
+- Linode LKE
+- Docker
+- Linux
+
+### Project Description
+- Create K8s cluster on LKE
+- Add LKE credentials (kubeconfig) on Jenkins
+- Install the Kubernetes CLI Jenkins plugin
+- Adjust Jenkinsfile to use the plugin and deploy to LKE cluster
+
 ---
 
 ## Steps to Deploy to Linode LKE from Jenkins
@@ -58,6 +71,8 @@ Download the kubeconfig file from your LKE dashboard.
 ```bash
 export KUBECONFIG=path/to/kubeconfig.yaml
 kubectl get nodes
+# NAME                            STATUS   ROLES    AGE     VERSION
+# lke109401-163296-6468ac4fc9f0   Ready    <none>   7m16s   v1.26.3
 ```
 
 ---
