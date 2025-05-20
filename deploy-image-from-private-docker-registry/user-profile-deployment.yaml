@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-profile
+  labels:
+    app: user-profile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-profile
+  template:
+    metadata:
+      labels:
+        app: user-profile
+    spec:
+      imagePullSecrets:
+      - name: my-registry-key
+      containers:
+      - name: user-profile
+        image: 369076538622.dkr.ecr.eu-central-1.amazonaws.com/user-profile:1.0.0
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 3000
