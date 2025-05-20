@@ -2,7 +2,17 @@
 
 ## Project Demo
 
-In this simple project, I outlined the process of deploying two applications—MongoDB and Mongo Express. It is demonstrated to showcase a typical web application setup with a database. The deployment begins by creating a MongoDB pod along with an internal service, ensuring only other components within the same Kubernetes cluster can communicate with it. Next, a Mongo Express deployment is set up, requiring the MongoDB database URL and authentication credentials. These are passed into Mongo Express via environment variables, using a ConfigMap for the URL and a Secret for the credentials. To make Mongo Express accessible through a browser, an external service is created, allowing incoming HTTP requests to reach the Mongo Express pod. The request flow starts from the browser, reaches the external service, is forwarded to the Mongo Express pod, which connects to the internal MongoDB service, and communicates with the MongoDB pod using the provided credentials for authentication. This setup provides a simple yet effective way to connect a frontend application to a backend database within a Kubernetes environment.
+This project shows how to deploy MongoDB and Mongo Express on Kubernetes. MongoDB runs as a pod with an internal service, while Mongo Express connects to it using configuration from a ConfigMap and credentials from a Secret. An external service exposes Mongo Express to the browser, allowing users to interact with the database securely. This setup demonstrates a basic, secure web application structure in Kubernetes.
+
+### Technologies Used
+- Kubernetes
+- Docker
+- MongoDB
+- Mongo Express
+
+### Project Description
+- Setup local K8s cluster with Minikube
+- Deploy MongoDB and MongoExpress with configuration and credentials extracted into ConfigMap and Secret
 
 ---
 
