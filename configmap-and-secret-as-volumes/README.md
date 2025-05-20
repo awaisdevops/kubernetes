@@ -86,7 +86,9 @@ data:  # #data
 kubectl apply -f mosquitto-secret.yaml
 kubectl apply -f mosquitto-configmap.yaml
 kubectl apply -f mosquitto-deployment.yaml
+```
 
+```bash
 kubectl get pods
 # NAME                         READY   STATUS              RESTARTS   AGE
 # mosquitto-65f5cbcbc5-cxhvj   0/1     ContainerCreating   0          4s
