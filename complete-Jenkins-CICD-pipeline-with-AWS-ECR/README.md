@@ -4,6 +4,28 @@
 
 This CI/CD pipeline sets up a complete automation flow using Jenkins to build a Java application, package it as a Docker image, push it to AWS ECR (a private container registry), and deploy it to an AWS EKS (Kubernetes) cluster. The pipeline securely uses AWS credentials stored in Jenkins to authenticate with ECR and EKS, and Kubernetes uses an image pull secret to access private images from ECR. Jenkins handles everything from versioning the app, building the image, deploying to EKS, and even committing version changes back to Git—resulting in a fully automated and secure deployment workflow.
 
+### Technologies Used
+- Kubernetes
+- Jenkins
+- AWS EKS
+- AWS ECR
+- Java
+- Maven
+- Linux
+- Docker
+- Git
+
+### Project Description
+- Create a private AWS ECR Docker repository
+- Create credentials for the ECR repository in Jenkins
+- Create a Secret for AWS ECR
+- Adjust Jenkinsfile to build and push Docker Image to AWS ECR
+- So the complete CI/CD project we build has the following configuration:
+  - a. CI step: Increment version
+  - b. CI step: Build artifact for Java Maven application
+  - c. CI step: Build and push Docker image to AWS ECR
+  - d. CD step: Deploy new application version to EKS cluster
+  - e. CD step: Commit the version update
 ---
 
 ## Key Pipeline Stages and Their Purpose:
