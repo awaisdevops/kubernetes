@@ -86,6 +86,23 @@ data:  # #data
 kubectl apply -f mosquitto-secret.yaml
 kubectl apply -f mosquitto-configmap.yaml
 kubectl apply -f mosquitto-deployment.yaml
+
+kubectl get pods
+# NAME                         READY   STATUS              RESTARTS   AGE
+# mosquitto-65f5cbcbc5-cxhvj   0/1     ContainerCreating   0          4s
+
+kubectl get pod mosquitto-65f5cbcbc5-55x7c --watch
+# NAME                         READY   STATUS              RESTARTS   AGE
+# mosquitto-65f5cbcbc5-cxhvj   0/1     ContainerCreating   0          7s
+# mosquitto-65f5cbcbc5-55x7c   1/1     Running             0          15s
+```
+
+Enter the mosquitto container and check the content of the secret file:
+```sh
+kubectl exec -it mosquitto-65f5cbcbc5-55x7c -- /bin/sh
+  cat /mosquitto/secret/secret.file
+  # => some supersecret file contents nobody should see
+  exit
 ```
 ```
 
