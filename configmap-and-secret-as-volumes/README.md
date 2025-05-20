@@ -87,6 +87,7 @@ kubectl apply -f mosquitto-secret.yaml
 kubectl apply -f mosquitto-configmap.yaml
 kubectl apply -f mosquitto-deployment.yaml
 ```
+## Get the Components
 
 ```bash
 kubectl get pods
@@ -99,7 +100,8 @@ kubectl get pod mosquitto-65f5cbcbc5-55x7c --watch
 # mosquitto-65f5cbcbc5-55x7c   1/1     Running             0          15s
 ```
 
-Enter the mosquitto container and check the content of the secret file:
+## Enter the mosquitto container and check the content of the secret file:
+
 ```sh
 kubectl exec -it mosquitto-65f5cbcbc5-55x7c -- /bin/sh
   cat /mosquitto/secret/secret.file
