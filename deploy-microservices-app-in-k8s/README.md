@@ -12,6 +12,39 @@ We're deploying a microservices-based **online shop application** into a Kuberne
 
 ---
 
+### Technologies Used
+- Kubernetes
+- Redis
+- Linux
+- Linode LKE
+
+### Project Description
+- Create K8s manifests for Deployments and Services for all microservices of an online shop application
+- Deploy the microservices to Linode’s managed Kubernetes cluster
+
+#### Steps to create K8s manifests for Deployments and Services for all microservices of an online shop application
+
+We are going to deploy the microservices application in the GitHub repository [nanuchi/microservices-demo](https://github.com/nanuchi/microservices-demo) into a Linode K8s cluster.
+
+The application is made up of the following microservices:
+1. Frontend: entrypoint, accessible from outside; port 8080; talking to 2, 3, 4, 7, 9, 10
+2. AdService: port 9555
+3. CheckoutService: port 5050; talking to 4, 5, 6, 7, 8, 10
+4. CurrencyService: port 7000
+5. EmailService: port 8080
+6. PaymentService: port 50051
+7. ShippingService: port 50051
+8. ProductCatalogService: port 3550
+9. RecommendationService: port 8080; talking to 8
+10. CartService: port 7070; storing data in Redis In-Memory cache
+11. LoadGenerator: not needed in production, just needed for doing load tests, talking to 1
+
+All the microservices are developped by one single team. So we decide to deploy them all into the same namespace.
+
+Since the example microservices application is a fork of a demo application provided by Google, the images are available in a [public Google image registry](https://console.cloud.google.com/gcr/images/google-samples/global/microservices-demo). The currently latest version of the images is `v0.6.0`.
+
+Each microservice container needs an environment variable called `PORT` specifying the port the container is listening on.
+
 ## Complete Process Workflow
 
 This section focuses on deployment details: which microservices are involved, how they communicate, and their dependencies on third-party services or databases.
