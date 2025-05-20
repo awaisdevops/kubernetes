@@ -18,25 +18,6 @@ This practical setup covers essential Kubernetes concepts—like stateful applic
 - Configure data persistence for MongoDB with Linode’s cloud storage
 - Deploy UI client Mongo Express for MongoDB
 - Deploy and configure nginx ingress to access the UI application from browser
-
-#### Steps to create a managed K8s cluster with Linode Kubernetes Engine
-- Login to your [Linode account](https://cloud.linode.com/), press the blue "Create" button and select "Kubernetes". 
-- Enter a cluster name (e.g. 'devops-bootcamp'), choose a region close to you (e.g. 'Frankfurt, DE (eu-central)') and select the latest Kubernetes version (e.g. 1.26). 
-- In the "Add Node Pools" section select the "Shared CPU" tab and add 2 "Linode 4 GB" nodes to the cart. Check the "I have read..." disclaimer and press the "Create Cluster" button.
-- On the dashboard you can see the two worker nodes (Linodes). Wait until both are up and running.
-- In the Kubernetes section at the top you can download a 'devops-bootcamp-kubeconfig.yaml' file with the credentials and certificates you need to connect to the K8s cluster. Download it.
-
-On your local machine set the environment variable KUBECONFIG to this file:
-```sh
-export KUBECONFIG=</path/to/download-folder>/devops-bootcamp-kubeconfig.yaml
-
-# now kubectl commands will be connected with the linode cluster
-kubectl get nodes
-# =>
-# NAME                            STATUS   ROLES    AGE   VERSION
-# lke104424-156177-6445973ec1e1   Ready    <none>   19m   v1.26.3
-# lke104424
-```
 ---
 
 ## Pre-requisites for the Guide
@@ -86,6 +67,17 @@ helm version
 8. Click "Create Cluster"
 9. Wait a few minutes for provisioning
 
+On your local machine set the environment variable KUBECONFIG to this file:
+```sh
+export KUBECONFIG=</path/to/download-folder>/devops-bootcamp-kubeconfig.yaml
+
+# now kubectl commands will be connected with the linode cluster
+kubectl get nodes
+# =>
+# NAME                            STATUS   ROLES    AGE   VERSION
+# lke104424-156177-6445973ec1e1   Ready    <none>   19m   v1.26.3
+# lke104424
+```
 ---
 
 ## Access and Configure `kubectl` to Use Your Cluster
