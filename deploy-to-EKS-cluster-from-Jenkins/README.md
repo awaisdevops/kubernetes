@@ -1,4 +1,4 @@
-# Deploy to EKS Cluster from Jenkins
+# Integrating Jenkins with AWS EKS for Automated Kubernetes Deployments
 
 We are assuming that you already have an AWS EKS cluster up and running.
 
