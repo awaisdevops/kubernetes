@@ -1,4 +1,4 @@
-# Complete Jenkins CI/CD Pipeline with AWS ECR Registry
+# End-to-End Jenkins CI/CD for AWS EKS with ECR Integration
 
 ---
 
