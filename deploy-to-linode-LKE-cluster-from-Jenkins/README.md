@@ -1,4 +1,4 @@
-# Deploy to Linode LKE Cluster from Jenkins
+# Streamlined Kubernetes Deployments on Linode LKE via Jenkins CI/CD
 
 This project demonstrates how to deploy an application from Jenkins to a Kubernetes cluster hosted on **Linode Kubernetes Engine (LKE)**. Compared to platforms like AWS EKS, Linode simplifies the authentication process and offers easier environment portability.
 
